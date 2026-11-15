@@ -1,27 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>StudyNest | Assignment Monitoring</title>
-
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <!-- StudyNest CSS -->
-    <link rel="stylesheet" href="style.css">
-</head>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>StudyNest | Assignment Monitoring</title>
+<link rel="stylesheet" href="style.css">
 <body>
-
-    <!-- Mobile Menu Button -->
-    <button
-        id="mobileMenuToggle"
-        class="mobile-menu-toggle"
-        type="button"
-        aria-label="
+<button id="mobileMenuToggle" class="mobile-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+<aside class="sidebar" id="studySidebar">
+ <div class="brand"><div class="brand-icon">☑</div><div><div class="brand-name">StudyNest</div><small id="brandSub">STUDENT WORKSPACE</small></div></div>
+ <div class="nav-label">WORKSPACE</div><nav id="nav"><button class="nav-btn" data-p="Dashboard"><span class="ico">▦</span>Dashboard</button><button class="nav-btn" data-p="My Classes"><span class="ico">▣</span>My Classes</button></nav>
+ <div class="personal"><div class="nav-label">PERSONAL</div><button class="nav-btn" data-page="Profile"><span class="ico">◉</span>My Profile</button></div>
+ <div class="reminder"><span class="bulb">♧</span><b>Little reminder</b>Small progress every day adds up.</div>
+ <button id="logout" class="nav-btn logout"><span class="ico">⇦</span>Log out</button>
+</aside>
+<div class="main">
+ <header class="topbar"><div class="crumb">My Workspace <b>/ <span id="crumb">Dashboard</span></b></div><div class="top-right"><span class="top-date" id="today"></span><div class="top-user"><span class="avatar" id="avatar">S</span><div><b id="topName">Student</b><small id="topRole">Student account</small></div></div></div></header>
+ <main class="content">
+  <section id="appView">
+   <div class="intro"><div><div class="eyebrow" id="eyebrow">YOUR OVERVIEW</div><h1 id="greeting">Hello, Student!</h1><p id="subheading">Here is what's happening with your studies.</p></div><button id="newAssignment" class="btn primary hidden">＋ New assignment</button></div>
+   <div id="pageContent"></div><p id="appMsg" class="msg"></p>
+  </section>
+ </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+</body></html>
