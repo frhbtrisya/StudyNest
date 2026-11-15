@@ -1,31 +1,13 @@
-
 // ============================================
 // STUDYNEST - LOGIN & STUDENT REGISTRATION
 // ============================================
 
 const KEY = "studynest_design_v2";
 
-let data;
-
-try {
-    data = JSON.parse(
-        localStorage.getItem(KEY) ||
-        '{"users":[],"assignments":[],"submissions":[],"classes":[]}'
-    );
-} catch (error) {
-    data = {
-        users: [],
-        assignments: [],
-        submissions: [],
-        classes: []
-    };
-}
-
-// Pastikan semua data mempunyai array.
-data.users = data.users || [];
-data.assignments = data.assignments || [];
-data.submissions = data.submissions || [];
-data.classes = data.classes || [];
+let data = JSON.parse(
+    localStorage.getItem(KEY) ||
+    '{"users":[],"assignments":[],"submissions":[]}'
+);
 
 const $ = (id) => document.getElementById(id);
 
@@ -33,7 +15,8 @@ const save = () => {
     localStorage.setItem(KEY, JSON.stringify(data));
 };
 
-// Akaun lecturer untuk demonstrasi.
+// Lecturer accounts for demonstration.
+// Add more lecturer accounts to this array when needed.
 const lecturerAccounts = [
     {
         name: "Demo Lecturer",
@@ -61,17 +44,15 @@ const lecturerAccounts = [
     }
 ];
 
-// Tambah akaun lecturer jika belum wujud.
+// Create the lecturer accounts if they do not exist yet.
 let accountsUpdated = false;
 
 lecturerAccounts.forEach((account) => {
-    const exists = data.users.some(
-        (user) =>
-            user.email &&
-            user.email.toLowerCase() === account.email.toLowerCase()
+    const accountExists = data.users.some(
+        (user) => user.email.toLowerCase() === account.email.toLowerCase()
     );
 
-    if (!exists) {
+    if (!accountExists) {
         data.users.push(account);
         accountsUpdated = true;
     }
@@ -81,102 +62,80 @@ if (accountsUpdated) {
     save();
 }
 
-// ============================================
-// LOGIN PAGE ONLY
-// Jangan jalankan fungsi login pada dashboard.
-// ============================================
+// Switch between Login and Student Registration.
+function switchTab(register) {
+    $("loginForm").classList.toggle("hidden", register);
+    $("regForm").classList.toggle("hidden", !register);
 
-const loginForm = $("loginForm");
-const regForm = $("regForm");
-const loginTab = $("loginTab");
-const regTab = $("regTab");
-const authMsg = $("authMsg");
+    $("loginTab").classList.toggle("active", !register);
+    $("regTab").classList.toggle("active", register);
 
-// Jika bukan halaman login, hentikan bahagian login sahaja.
-if (loginForm && regForm && loginTab && regTab && authMsg) {
+    $("authMsg").textContent = "";
+}
 
-    // Tukar antara Login dan Student Registration.
-    function switchTab(register) {
-        loginForm.classList.toggle("hidden", register);
-        regForm.classList.toggle("hidden", !register);
+$("loginTab").addEventListener("click", () => switchTab(false));
+$("regTab").addEventListener("click", () => switchTab(true));
 
-        loginTab.classList.toggle("active", !register);
-        regTab.classList.toggle("active", register);
+// Login for lecturers and students.
+$("loginForm").addEventListener("submit", (event) => {
+    event.preventDefault();
 
-        authMsg.textContent = "";
+    const email = $("loginEmail").value.trim().toLowerCase();
+    const password = $("loginPassword").value;
+
+    const account = data.users.find(
+        (user) =>
+            user.email.toLowerCase() === email &&
+            user.password === password
+    );
+
+    if (!account) {
+        $("authMsg").textContent =
+            "Email or password is incorrect. Please try again.";
+        return;
     }
 
-    loginTab.addEventListener("click", () => switchTab(false));
-    regTab.addEventListener("click", () => switchTab(true));
+    sessionStorage.setItem(
+        "studynestUser",
+        JSON.stringify({ email: account.email })
+    );
 
-    // LOGIN
-    loginForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+    window.location.href = "index.html";
+});
 
-        const email = $("loginEmail").value.trim().toLowerCase();
-        const password = $("loginPassword").value;
+// Student registration only.
+// Students cannot register themselves as lecturers.
+$("regForm").addEventListener("submit", (event) => {
+    event.preventDefault();
 
-        const account = data.users.find(
-            (user) =>
-                user.email &&
-                user.email.toLowerCase() === email &&
-                user.password === password
-        );
+    const name = $("regName").value.trim();
+    const email = $("regEmail").value.trim().toLowerCase();
+    const password = $("regPassword").value;
 
-        if (!account) {
-            authMsg.textContent =
-                "Email or password is incorrect. Please try again.";
-            return;
-        }
+    const emailExists = data.users.some(
+        (user) => user.email.toLowerCase() === email
+    );
 
-        sessionStorage.setItem(
-            "studynestUser",
-            JSON.stringify({ email: account.email })
-        );
+    if (emailExists) {
+        $("authMsg").textContent =
+            "This email is already registered.";
+        return;
+    }
 
-        window.location.href = "index.html";
-    });
+    const newStudent = {
+        name: name,
+        email: email,
+        password: password,
+        role: "student"
+    };
 
-    // STUDENT REGISTRATION
-    regForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+    data.users.push(newStudent);
+    save();
 
-        const name = $("regName").value.trim();
-        const email = $("regEmail").value.trim().toLowerCase();
-        const password = $("regPassword").value;
+    sessionStorage.setItem(
+        "studynestUser",
+        JSON.stringify({ email: newStudent.email })
+    );
 
-        if (!name || !email || !password) {
-            authMsg.textContent = "Please complete all fields.";
-            return;
-        }
-
-        const emailExists = data.users.some(
-            (user) =>
-                user.email &&
-                user.email.toLowerCase() === email
-        );
-
-        if (emailExists) {
-            authMsg.textContent =
-                "This email is already registered.";
-            return;
-        }
-
-        const newStudent = {
-            name: name,
-            email: email,
-            password: password,
-            role: "student"
-        };
-
-        data.users.push(newStudent);
-        save();
-
-        sessionStorage.setItem(
-            "studynestUser",
-            JSON.stringify({ email: newStudent.email })
-        );
-
-        window.location.href = "index.html";
-    });
-}
+    window.location.href = "index.html";
+});
